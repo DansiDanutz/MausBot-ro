@@ -279,7 +279,9 @@ case "$MODE" in
     ;;
   bots)
     [ -f "$INSTALL_DIR/compose.yaml" ] || fail "No OpenMausBot install in $INSTALL_DIR. Run without --bots-only first."
-    DOMAIN=$(awk -F= '/^DOMAIN=/ { print $2; exit }' "$INSTALL_DIR/.env" 2>/dev/null || true)
+    DOMAIN=$(awk -F= '/^DOMAIN=/ { print $2; exit }' "$INSTALL_DIR/.env" 2>/dev/null | tr -d '"' || true)
+    compose exec -T omb true >/dev/null 2>&1 ||
+      fail "The MausBot container is not running. Start it with: cd $INSTALL_DIR && docker compose up -d"
     apply_keys
     make_bots
     pair_link
